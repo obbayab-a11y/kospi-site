@@ -1,0 +1,135 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+ * 디자인 토큰
+ * - 기본 UI: shadcn/ui neutral 계열 (차분한 금융 대시보드 톤)
+ * - 심리 스케일: 공포=파랑 ↔ 중립=회색 ↔ 탐욕=빨강 (한국 시장 색 관례와 일치하는 diverging 스케일)
+ *   CVD(색각 이상) 시뮬레이션 기준 인접 구간 ΔE ≥ 12 로 검증. 색만으로 의미를 전달하지 않도록 항상 텍스트 라벨을 함께 표시.
+ * - 가격 등락: 상승=빨강, 하락=파랑 (국내 관례)
+ */
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.985 0.002 90);
+  --foreground: oklch(0.18 0.005 90);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.005 90);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.005 90);
+  --primary: oklch(0.22 0.01 260);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.96 0.003 90);
+  --secondary-foreground: oklch(0.22 0.01 260);
+  --muted: oklch(0.955 0.003 90);
+  --muted-foreground: oklch(0.5 0.008 90);
+  --accent: oklch(0.955 0.003 90);
+  --accent-foreground: oklch(0.22 0.01 260);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.91 0.004 90);
+  --input: oklch(0.91 0.004 90);
+  --ring: oklch(0.65 0.01 260);
+
+  --sentiment-extreme-fear: #1c5cab;
+  --sentiment-fear: #5598e7;
+  --sentiment-neutral: #c9c8c1;
+  --sentiment-greed: #e66a5c;
+  --sentiment-extreme-greed: #a82424;
+
+  --price-up: #d1302f;
+  --price-down: #1d5fb4;
+
+  --chart-line: #1b1b1a;
+  --chart-secondary-line: #52514e;
+  --chart-grid: #e7e6e1;
+  --chart-axis: #8a8983;
+}
+
+:root[data-theme="dark"] {
+  --background: oklch(0.16 0.003 90);
+  --foreground: oklch(0.95 0.003 90);
+  --card: oklch(0.2 0.003 90);
+  --card-foreground: oklch(0.95 0.003 90);
+  --popover: oklch(0.22 0.003 90);
+  --popover-foreground: oklch(0.95 0.003 90);
+  --primary: oklch(0.93 0.005 90);
+  --primary-foreground: oklch(0.2 0.005 90);
+  --secondary: oklch(0.26 0.003 90);
+  --secondary-foreground: oklch(0.95 0.003 90);
+  --muted: oklch(0.25 0.003 90);
+  --muted-foreground: oklch(0.7 0.008 90);
+  --accent: oklch(0.27 0.003 90);
+  --accent-foreground: oklch(0.95 0.003 90);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.55 0.01 260);
+
+  --sentiment-extreme-fear: #2a6cc0;
+  --sentiment-fear: #7fb0ea;
+  --sentiment-neutral: #6a6964;
+  --sentiment-greed: #f08878;
+  --sentiment-extreme-greed: #c02c2c;
+
+  --price-up: #f06161;
+  --price-down: #5b9cf0;
+
+  --chart-line: #f0efec;
+  --chart-secondary-line: #c3c2b7;
+  --chart-grid: #2c2c2a;
+  --chart-axis: #8f8e88;
+}
+
+@theme inline {
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-price-up: var(--price-up);
+  --color-price-down: var(--price-down);
+  --color-extreme-fear: var(--sentiment-extreme-fear);
+  --color-fear: var(--sentiment-fear);
+  --color-neutral-band: var(--sentiment-neutral);
+  --color-greed: var(--sentiment-greed);
+  --color-extreme-greed: var(--sentiment-extreme-greed);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: light;
+  }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "tnum" 1;
+    word-break: keep-all;
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}

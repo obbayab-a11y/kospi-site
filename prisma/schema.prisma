@@ -1,0 +1,50 @@
+// KOSPI 공포·탐욕지수 저장소
+//
+// 기본은 SQLite. PostgreSQL로 전환하려면:
+//   1) provider = "postgresql"
+//   2) DATABASE_URL="postgresql://user:pass@host:5432/db"
+//   3) npx prisma db push  (또는 prisma migrate)
+// rawData/meta는 DB 간 호환을 위해 JSON 문자열로 저장한다.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model FearGreedDaily {
+  /// KST 거래일 (yyyy-MM-dd)
+  date                String   @id
+  score               Int
+  classification      String
+  kospiClose          Float
+  momentumScore       Float?
+  volatilityScore     Float?
+  breadthScore        Float?
+  foreignFlowScore    Float?
+  marketStrengthScore Float?
+  putCallScore        Float?
+  riskAppetiteScore   Float?
+  /// Factor별 원천 수치 (JSON)
+  rawData             String
+  /// 적용 가중치·누락 Factor (JSON)
+  meta                String
+  updatedAt           DateTime
+  createdAt           DateTime @default(now())
+
+  @@index([score])
+}
+
+/// 동기화 작업 이력
+model SyncRun {
+  id         Int      @id @default(autoincrement())
+  startedAt  DateTime @default(now())
+  finishedAt DateTime?
+  mode       String
+  ok         Boolean  @default(false)
+  days       Int      @default(0)
+  message    String?
+}
